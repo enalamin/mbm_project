@@ -1,4 +1,3 @@
-## This is the project for url shortener. it will take input a url and genearte a short url. when you click on short url it will redirect to orginal url.
 ## Project installation steps
 
 - colne the project
