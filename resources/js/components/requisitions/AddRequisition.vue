@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h4 class="text-center">Add Suplier</h4>
+        <h4 class="text-center">Add Requisition</h4>
         <div class="row">
             <div class="col-md-6">
                 <form @submit.prevent="addRequisition">

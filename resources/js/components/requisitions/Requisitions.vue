@@ -23,7 +23,7 @@
                 <td>{{ requisition.created_by }}</td>
                 <td>
                     <div class="btn-group" role="group">
-                        <router-link v-if="currentRole === 'employee'" :to="{name: 'editrequisition', params: { id: requisition.id }}" class="btn btn-primary">Edit
+                        <router-link v-if="currentRole === 'employee' && requisition.status === 'draft'" :to="{name: 'editrequisition', params: { id: requisition.id }}" class="btn btn-primary">Edit
                         </router-link>
                         <span v-if="currentRole === 'admin' && requisition.status === 'draft'" @click="changeStatus(requisition.id,'approved')" class="btn btn-primary">aprove
                         </span>
@@ -32,7 +32,7 @@
                         
                         <span v-if="currentRole === 'executive' && requisition.status === 'approved'" @click="issueItems()" class="btn btn-primary">Issue Items
                         </span>
-                        <router-link :to="{name: 'viewrequisition', params: { id: requisition.id }}" class="btn btn-primary">View
+                        <router-link :to="{name: 'viewrequisition', params: { id: requisition.id }}" class="btn btn-primary" target='_blank'>View
                         </router-link>
                         
                     </div>
