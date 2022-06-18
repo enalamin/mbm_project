@@ -12,7 +12,7 @@ class ItemController extends Controller
     public function index()
     {
         $items = Item::all()->toArray();
-        return array_reverse($items);
+        return $items;
     }
 
     // add items

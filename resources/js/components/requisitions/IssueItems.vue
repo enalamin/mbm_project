@@ -1,6 +1,6 @@
 <template>
-    <div class="container">
-        <h4 class="text-center">View Requisition</h4>
+    <div>
+        <h4 class="text-center">Issue Requisition Items</h4>
         <div class="row">
             <div class="col-md-6">                
                 <div class="form-group">
@@ -33,6 +33,8 @@
                     <th>Item</th>
                     <th>Quantity</th>
                     <th>Issued Quantity</th>
+                    <th>Issue</th>
+                    
                 </tr>
                 <tr v-for="item in requisition.requisitionItems" :key="item.item_id">
                     <td>
@@ -48,15 +50,7 @@
                 </tr>
             </table>
         </div>
-        <div class="row" v-if="currentRole === 'executive' && requisition.status === 'approved'">
-            <div class="col-md-4">
-                <label>Issue Date</label>
-                <input type="date" class="form-control" v-model="requisition.issue_date" >
-            </div>
-            <div class="col-md-8">
-            <button type="button"   class="btn btn-info" @click="issueRequisition" style="margin-top:24px;">Issue Items</button>
-            </div>
-        </div>
+        
     </div>
 </template>
 
@@ -65,18 +59,12 @@ export default {
     data() {
         return {
             requisition: {},
-            items:[],
-            currentRole : ''
+            items:[]
         }
     },
     created() {
-        if (window.Laravel.isLoggedin) {
-            this.currentRole = window.Laravel.user.role
-        }else{
-            this.currentRole = ''
-        }
         this.$axios.get('/sanctum/csrf-cookie').then(response => {
-            this.$axios.get(`/api/requisitions/edit/${this.$route.params.id}`)
+            this.$axios.get(`/api/requisitions/issue/${this.$route.params.id}`)
                 .then(response => {
                     this.requisition = response.data;
                 })
@@ -86,22 +74,7 @@ export default {
         })
     },
     methods: {
-        issueRequisition() {
-            if(this.requisition.issue_date){
-                this.$axios.get('/sanctum/csrf-cookie').then(response => {
-                    this.$axios.post(`/api/requisitions/issue/${this.$route.params.id}`, this.requisition)
-                        .then(response => {
-                            this.$router.push({name: 'requisitions'})
-                        })
-                        .catch(function (error) {
-                            console.error(error);
-                        });
-                })
-            } else{
-                alert('select Issue date')
-            }
-            
-        }
+        
         
     },
     beforeRouteEnter(to, from, next) {

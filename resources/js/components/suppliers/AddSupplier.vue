@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div  class="container">
         <h4 class="text-center">Add Suplier</h4>
         <div class="row">
             <div class="col-md-6">

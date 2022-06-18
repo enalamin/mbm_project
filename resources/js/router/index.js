@@ -19,6 +19,13 @@ import AddRequisition from '../components/requisitions/AddRequisition';
 import EditRequisition from '../components/requisitions/EditRequisition';
 import ViewRequisition from '../components/requisitions/ViewRequisition';
 
+
+
+import StockReceives from '../components/receives/StockReceives';
+import AddStockReceive from '../components/receives/AddStockReceive';
+import ViewStockReceive from '../components/receives/ViewStockReceive';
+import ItemWiseStock from '../components/receives/ItemWiseStock';
+
 export const routes = [
     {
         name: 'home',
@@ -94,6 +101,26 @@ export const routes = [
         name: 'viewrequisition',
         path: '/requisitions/view/:id',
         component: ViewRequisition
+    },
+    {
+        name: 'stockreceive',
+        path: '/stock-receive',
+        component: StockReceives
+    },
+    {
+        name: 'addstockreceive',
+        path: '/stock-receive/add',
+        component: AddStockReceive
+    },
+    {
+        name: 'viewstockreceive',
+        path: '/stock-receive/view/:id',
+        component: ViewStockReceive
+    },
+    {
+        name: 'itemstock',
+        path: '/stock-receive/avilable-stock',
+        component: ItemWiseStock
     },
 
 ];

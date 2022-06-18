@@ -8,7 +8,7 @@
                 </div>
 
                 <div class="card card-default">
-                    <div class="card-header">Register</div>
+                    <div class="card-header">Add New User</div>
                     <div class="card-body">
                         <form>
                             <div class="form-group row">

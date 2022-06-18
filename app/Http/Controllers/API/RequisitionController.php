@@ -21,10 +21,10 @@ class RequisitionController extends Controller
         }
 
         if(\Auth::user()->role == 'executive'){
-            $requisitions = $requisitions->where('requisitions.status','=','approved');
+            $requisitions = $requisitions->whereIn('requisitions.status',['approved','issued']);
         }
         $requisitions = $requisitions->orderBy('requisitions.requisition_date','ASC')->get()->toArray();
-        return array_reverse($requisitions);
+        return $requisitions;
     }
 
     // add requisition
@@ -33,52 +33,49 @@ class RequisitionController extends Controller
         if(\Auth::user()->role == 'employee'){
             DB::beginTransaction();
             try{
-                $supplier = new Requisition([
+                $requisition = new Requisition([
                     'requisition_no' => $request->requisition_no,
                     'requisition_date' => $request->requisition_date,
                     'description' => $request->description,
                     'status' => 'draft',
                     'entry_by' => \Auth::user()->id
                 ]);
-                $supplier->save();
+                $requisition->save();
                 $itemDetails = $request->requisitionItems;
                 if($itemDetails){
                     $requisitionItems = [];
                     foreach($itemDetails as $item){
                     
                         array_push(
-                            $requisitionItems,array(
-                                'requisition_id' => $supplier->id,
+                            $requisitionItems,[
+                                'requisition_id' => $requisition->id,
                                 'item_id' => $item['item_id'],
                                 'amount' => $item['quantity'],
                                 'entry_by' => \Auth::user()->id
-                            )
+                            ]
                         );
                     }
-                    
+                    //dd($requisitionItems);
                     DB::table('requisition_details')->insert($requisitionItems);
                     DB::commit();
                     return response()->json('The requisition successfully added');
                 }
             }catch (\Exception $e) {
                 DB::rollback();
-                //dd($e->getMessage());
+                dd($e->getMessage());
                 return response()->json('Operation failed');
                 // something went wrong
             }
         }else{
             return response()->json('You do not have the permission');
-        }
-        
-
-        
+        }   
     }
 
     // edit requisition
     public function edit($id)
     {
         $requisition = DB::table('requisitions')
-        ->select('requisitions.*','requisition_details.item_id','requisition_details.amount','items.item_name')
+        ->select('requisitions.*','requisition_details.item_id','requisition_details.amount','requisition_details.issued_quantity','items.item_name')
         ->join('requisition_details','requisition_details.requisition_id','=','requisitions.id')
         ->join('items',function($join) use($id)
         {
@@ -96,6 +93,7 @@ class RequisitionController extends Controller
                     'item_id' => $item->item_id,
                     'amount' => $item->amount,
                     'item_name' => $item->item_name,
+                    'issued_quantity' => $item->issued_quantity
                 ));
             }
             $requisitionObject = array(
@@ -110,6 +108,7 @@ class RequisitionController extends Controller
         return response()->json($requisitionObject);
     }
 
+    
     // update supplier
     public function update($id, Request $request)
     {
@@ -179,5 +178,73 @@ class RequisitionController extends Controller
                 // something went wrong
             }
         }
+    }
+
+    public function issueRequisition(Request $request,$id)
+    {
+        $requistionItems = $request->requisitionItems;
+        if(\Auth::user()->role == 'executive'){
+            DB::beginTransaction();
+            try{
+                foreach($requistionItems as $item){
+                    $itmeStockInfo = $this->getItemstock($item['item_id']);
+                    $issuedQuantity = 0;
+
+                    foreach($itmeStockInfo as $stockItem){
+                        if($stockItem->quantity-$stockItem->used_qty >= $item['amount']-$issuedQuantity){
+                            // update stock receive
+                            
+                            DB::table('stock_receives')->where('id','=',$stockItem->id)
+                            ->update([
+                                'used_qty' => ($stockItem->used_qty+$item['amount']-$issuedQuantity)
+                            ]);
+                            $issuedQuantity  += $item['amount']-$issuedQuantity;
+                            dd($issuedQuantity);
+                        } else{
+                            DB::table('stock_receives')->where('id','=',$stockItem->id)
+                            ->update([
+                                'used_qty' => $stockItem->quantity
+                            ]);
+                            $issuedQuantity  += $stockItem->quantity-$stockItem->used_qty;
+                        }
+
+                        if($issuedQuantity==$item['amount']){
+                            break;
+                        }
+                    }
+                    //
+                    DB::table('requisition_details')
+                    ->where('item_id','=',$item['item_id'])
+                    ->where('requisition_id','=',$id)
+                            ->update([
+                                'issued_quantity' => $issuedQuantity
+                            ]);
+
+                }
+                DB::table('requisitions')->where('id','=',$id)->update(
+                    [
+                        'status' => 'issued',
+                        'issue_by' => \Auth::user()->id,
+                        'issue_date' => $request->issue_date
+                    ]
+                    );
+                DB::commit();
+                return response()->json('The requisition successfully issued');
+            }catch(\Exception $e){
+                DB::rollback();
+                dd($e->getMessage());
+                return response()->json('operation failed');
+            }
+        }
+    }   
+    
+    private function getItemstock($itemId)
+    {
+        $itemStocks = DB::table('stock_receives')
+        ->where('quantity','>','used_qty')
+        ->where('item_id','=',$itemId)
+        ->orderBy('receive_date','asc')
+        ->get()->toArray();
+        return $itemStocks;
     }
 }

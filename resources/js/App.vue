@@ -1,31 +1,35 @@
 <template>
     <div class="container">
-        <div class="text-center" style="margin: 20px 0px 20px 0px;">
+        <div class="text-center main-header">
             <span class="text-secondary">Laravel SPA with Vue 3, Auth (Sanctum), MBM Group </span>
         </div>
+        <div class="body-container">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="collapse navbar-collapse">
+                    <!-- for logged-in user-->
+                    <div class="navbar-nav" v-if="isLoggedIn">
+                        <router-link to="/dashboard" class="nav-item nav-link">Dashboard</router-link>
+                        <router-link to="/items" class="nav-item nav-link" v-if="userRole === 'admin'">Items</router-link>
+                        <router-link to="/suppliers" class="nav-item nav-link" v-if="userRole === 'admin'">Suppliers</router-link>
+                        <router-link to="/requisitions" class="nav-item nav-link" >Requisitions</router-link>
+                        <router-link to="/stock-receive" class="nav-item nav-link" v-if="userRole === 'executive'">Receive Items</router-link>
+                        <router-link to="/stock-receive/avilable-stock" class="nav-item nav-link" >Items Stock</router-link>
+                        <router-link to="/register" class="nav-item nav-link">Add New User</router-link>
+                        <a class="nav-item nav-link" style="cursor: pointer;" @click="logout">Logout</a>
+                    </div>
 
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="collapse navbar-collapse">
-                <!-- for logged-in user-->
-                <div class="navbar-nav" v-if="isLoggedIn">
-                    <router-link to="/dashboard" class="nav-item nav-link">Dashboard</router-link>
-                    <router-link to="/items" class="nav-item nav-link" v-if="userRole === 'admin'">Items</router-link>
-                    <router-link to="/suppliers" class="nav-item nav-link" v-if="userRole === 'admin'">Suppliers</router-link>
-                    <router-link to="/requisitions" class="nav-item nav-link" >Requisitions</router-link>
-                    <router-link to="/register" class="nav-item nav-link">Add New User</router-link>
-                    <a class="nav-item nav-link" style="cursor: pointer;" @click="logout">Logout</a>
+                    <!-- for non-logged user-->
+                    <div class="navbar-nav" v-else>
+                        <router-link to="/" class="nav-item nav-link">Home</router-link>
+                        <router-link to="/login" class="nav-item nav-link">login</router-link>
+                        
+                        
+                    </div>
                 </div>
-                <!-- for non-logged user-->
-                <div class="navbar-nav" v-else>
-                    <router-link to="/" class="nav-item nav-link">Home</router-link>
-                    <router-link to="/login" class="nav-item nav-link">login</router-link>
-                    
-                    <router-link to="/about" class="nav-item nav-link">About</router-link>
-                </div>
-            </div>
-        </nav>
-        <br/>
-        <router-view/>
+            </nav>
+            
+            <router-view/>
+        </div>
     </div>
 </template>
 <style>

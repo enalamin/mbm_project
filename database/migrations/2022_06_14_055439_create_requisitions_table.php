@@ -18,9 +18,11 @@ return new class extends Migration
             $table->string('requisition_no',10)->unique();
             $table->date('requisition_date');
             $table->string('description')->nullable();
-            $table->enum('status',['draft', 'approved', 'rejected'])->default('draft');
+            $table->enum('status',['draft', 'approved', 'rejected','issued'])->default('draft');
+            $table->date('issue_date')->nullable();
+            $table->integer('issue_by')->nullable();
             $table->integer('entry_by');
-            $table->integer('update_by')->nullable();;
+            $table->integer('update_by')->nullable();
             $table->timestamps();
         });
     }

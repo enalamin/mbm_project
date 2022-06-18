@@ -12,7 +12,7 @@ class SupplierController extends Controller
     public function index()
     {
         $suppliers = Supplier::all()->toArray();
-        return array_reverse($suppliers);
+        return $suppliers;
     }
 
     // add suppliers

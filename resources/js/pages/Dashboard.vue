@@ -1,6 +1,6 @@
 <template>
-    <div>
-        Welcome {{ name }}
+    <div class="container">
+        <h3>Welcome {{ name }}</h3>
     </div>
 </template>
 

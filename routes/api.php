@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\ItemController;
 use App\Http\Controllers\API\SupplierController;
 use App\Http\Controllers\API\RequisitionController;
+use App\Http\Controllers\API\StockReceiveController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,5 +33,13 @@ Route::group(['prefix' => 'requisitions', 'middleware' => 'auth:sanctum'], funct
     Route::get('edit/{id}', [RequisitionController::class, 'edit']);
     Route::post('update/{id}', [RequisitionController::class, 'update']);
     Route::post('status-change/{id}', [RequisitionController::class, 'approveOrReject']);
+    Route::post('issue/{id}', [RequisitionController::class, 'issueRequisition']);
+});
+
+Route::group(['prefix' => 'stock-receive', 'middleware' => 'auth:sanctum'], function () {
+    Route::get('/', [StockReceiveController::class, 'index']);
+    Route::post('add', [StockReceiveController::class, 'add']);
+    Route::get('edit/{id}', [StockReceiveController::class, 'edit']);
+    Route::get('avilable-stock', [StockReceiveController::class, 'itemsCurrentStocks']);
 });
 

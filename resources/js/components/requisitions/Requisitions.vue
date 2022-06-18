@@ -1,6 +1,11 @@
 <template>
-    <div>
+    <div class="container">
         <h4 class="text-center">Requisition List</h4><br/>
+
+        
+        <button type="button" v-if="currentRole === 'employee'"  class="btn btn-info" @click="this.$router.push('/requisitions/add')">Create New Requisition</button>
+        <br/>
+        <br/>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -30,9 +35,8 @@
                         <span v-if="currentRole === 'admin' && requisition.status === 'draft'" @click="changeStatus(requisition.id,'rejected')" class="btn btn-primary">reject
                         </span>
                         
-                        <span v-if="currentRole === 'executive' && requisition.status === 'approved'" @click="issueItems()" class="btn btn-primary">Issue Items
-                        </span>
-                        <router-link :to="{name: 'viewrequisition', params: { id: requisition.id }}" class="btn btn-primary" target='_blank'>View
+                       
+                        <router-link :to="{name: 'viewrequisition', params: { id: requisition.id }}" class="btn btn-primary" >View
                         </router-link>
                         
                     </div>
@@ -40,7 +44,6 @@
             </tr>
             </tbody>
         </table>
-        <button type="button" v-if="currentRole === 'employee'"  class="btn btn-info" @click="this.$router.push('/requisitions/add')">Create New Requisition</button>
     </div>
 </template>
 
@@ -74,7 +77,7 @@ export default {
             this.$axios.get('/sanctum/csrf-cookie').then(response => {
                 this.$axios.post(`/api/requisitions/status-change/${id}`,{status:status})
                     .then(response => {
-                        this.$router.push({name: 'requisitions'});
+                        this.$router.push('/requisitions');
                     })
                     .catch(function (error) {
                         console.error(error);

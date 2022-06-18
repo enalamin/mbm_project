@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('requisition_id');
             $table->integer('item_id');
             $table->double('amount', 8, 2);
+            $table->double('issued_quantity', 8, 2)->nullable();
             $table->integer('entry_by');
             $table->timestamps();
         });

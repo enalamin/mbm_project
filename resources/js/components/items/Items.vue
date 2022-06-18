@@ -1,6 +1,9 @@
 <template>
-    <div>
+    <div class="container">
         <h4 class="text-center">All Items</h4><br/>
+        <button type="button" class="btn btn-info" @click="this.$router.push('/items/add')">Add Item</button>
+        <br>
+        <br>
         <table class="table table-bordered">
             <thead>
             <tr>
@@ -30,7 +33,7 @@
             </tbody>
         </table>
 
-        <button type="button" class="btn btn-info" @click="this.$router.push('/items/add')">Add Item</button>
+        
     </div>
 </template>
 
